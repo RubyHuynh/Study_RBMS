@@ -1,0 +1,158 @@
+12:11 PM
+psql -d database_name -U user_name
+
+psql -d analysis -U postgres -h example.com
+
+
+postgres=# \c temo
+You are now connected to database "temo" as user "postgres".
+
+CREATE TABLE licenses (
+license_id varchar(10),
+first_name varchar(50),
+last_name varchar(50),
+CONSTRAINT licenses_key PRIMARY KEY (license_id)
+);
+CREATE TABLE registrations (
+registration_id varchar(10),
+registration_date date,
+license_id varchar(10) REFERENCES licenses (license_id),
+CONSTRAINT registration_key PRIMARY KEY (registration_id, license_id)
+);
+INSERT INTO licenses (license_id, first_name, last_name)
+VALUES ('T229901', 'Lynn', 'Malero');
+CREATE TABLE registrations (
+registration_id varchar(10),
+registration_date date,
+license_id varchar(10) REFERENCES licenses (license_id) ON DELETE CASCADE,
+CONSTRAINT registration_key PRIMARY KEY (registration_id, license_id)
+);
+CREATE TABLE check_constraint_example (
+user_id bigserial,
+user_role varchar(50),
+salary integer,
+CONSTRAINT user_id_key PRIMARY KEY (user_id),
+ CONSTRAINT check_role_in_list CHECK (user_role IN('Admin', 'Staff')),
+ CONSTRAINT check_salary_not_zero CHECK (salary > 0)
+);
+CONSTRAINT grad_check CHECK (credits >= 120 AND tuition = 'Paid')
+CREATE TABLE unique_constraint_example (
+contact_id bigserial CONSTRAINT contact_id_key PRIMARY KEY,106 Chapter 7
+first_name varchar(50),
+last_name varchar(50),
+email varchar(200),
+ CONSTRAINT email_unique UNIQUE (email)
+
+);
+CREATE TABLE not_null_example (
+student_id bigserial,
+first_name varchar(50) NOT NULL,
+last_name varchar(50) NOT NULL,
+CONSTRAINT student_id_key PRIMARY KEY (student_id)
+);
+ALTER TABLE table_name DROP CONSTRAINT constraint_name;
+ALTER TABLE table_name ALTER COLUMN column_name DROP NOT NULL;
+ALTER TABLE not_null_example DROP CONSTRAINT student_id_key;
+ALTER TABLE not_null_example ADD CONSTRAINT student_id_key PRIMARY KEY (student_id);
+ALTER TABLE not_null_example ALTER COLUMN first_name DROP NOT NULL;
+ALTER TABLE not_null_example ALTER COLUMN first_name SET NOT NULL;
+
+B-Tree: PostgreSQL’s Default Index
+PostgreSQL incorporates additional index types, including the
+Generalized Inverted Index (GIN) and the Generalized Search Tree (GiST).
+
+
+CREATE TABLE new_york_addresses (
+longitude numeric(9,6),
+latitude numeric(9,6),Table Design That Works for You 109
+street_number varchar(10),
+street varchar(32),
+unit varchar(7),
+postcode varchar(5),
+id integer CONSTRAINT new_york_key PRIMARY KEY
+);
+COPY new_york_addresses
+FROM 'C:\YourDirectory\city_of_new_york.csv'
+WITH (FORMAT CSV, HEADER);
+
+
+EXPLAIN ANALYZE SELECT * FROM new_york_addresses
+WHERE street = 'BROADWAY';
+
+lib pq for dev:
+yum install postgresql-libs
+
+or
+libpq-dev on ubuntu
+12:34 PM
+
+[root@mps1a pq]# pg_config --includedir
+/usr/include
+[root@mps1a pq]# pg_config --libdir
+/usr/lib64
+[root@mps1a pq]# 
+12:42 PM
+/etc/postgresql/9.3/main/pg_hba.conf
+1:34 PM
+
+https://zetcode.com/db/postgresqlc/
+
+PostgreSQL C - PostgreSQL programming in C
+https://zetcode.com
+
+1:49 PM
+
+create_table.c
+
+
+prepare.c
+
+
+query.c
+
+
+collumn_headers.c
+
+
+connect.c
+Ngoc Huynh has renamed the conversation to “MAY-Op: PSQL”
+Ngoc Huynh has changed the conversation picture
+2:16 PM
+yum install postgresql-devel
+12:58 PM
+chapter 8: group by, having, count, sum. min max
+8:21 AM
+=== 30/05/2022 t2
+WITH
+large_counties (geo_name, st, p0010001)
+AS
+(
+ SELECT geo_name, state_us_abbreviation, p0010001
+FROM us_counties_2010
+WHERE p0010001 >= 100000
+)
+ SELECT st, count(*)
+
+FROM large_counties
+GROUP BY st
+ORDER BY count(*)
+ DESC
+SELECT state_us_abbreviation, count(*)
+
+FROM us_counties_2010
+WHERE p0010001 >= 100000
+GROUP BY state_us_abbreviation
+ORDER BY count(*)
+ DESC;
+WITH us_median AS
+(SELECT percentile_cont(.5)
+WITHIN GROUP (ORDER BY p0010001) AS us_median_pop
+FROM us_counties_2010)
+SELECT geo_name,
+state_us_abbreviation AS st,
+p0010001 AS total_pop,
+ us_median_pop,
+ p0010001 - us_median_pop AS diff_from_median
+ FROM us_counties_2010 CROSS JOIN us_median
+ WHERE (p0010001 - us_median_pop)
+BETWEEN -1000 AND 1000;
